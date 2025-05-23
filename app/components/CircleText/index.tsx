@@ -8,6 +8,7 @@ type circleTextProps = {
   showBorderBgClr?: boolean;
   showBgClr?: boolean;
   onTxtPicked?: (num:any) => void;
+  onPressDisabled?: boolean;
 };
 
 const CircleText = ({
@@ -16,9 +17,11 @@ const CircleText = ({
   showBorderBgClr,
   showBgClr,
   onTxtPicked,
+  onPressDisabled =false
 }: circleTextProps) => {
   return (
     <TouchableOpacity
+    disabled={onPressDisabled}
       onPress={() => onTxtPicked && onTxtPicked(value)}
       key={value}
       style={[

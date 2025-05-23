@@ -24,6 +24,7 @@ const LotteryCard = ({ onCardPress, cardItems, onCardDelete }: cardProps) => {
               value={num}
               isLastItem={isLastItem}
               key={num.toString()}
+              onPressDisabled={true}
             />
           );
         })}

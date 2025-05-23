@@ -5,12 +5,12 @@ import { colors } from "@/assets/colors";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
+  Alert,
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux/store";
@@ -29,6 +29,7 @@ const HomeScreen = () => {
   const lotteryData = useSelector((state: RootState) => state.lottery)
     ? useSelector((state: RootState) => state.lottery.selectedNumbers)
     : [];
+  const isPurchaseBtnDisabled = lotteryData?.length == 0;
 
   //navigation redirection to lottery screen
   const onRedirection = (array: number[]) => {
@@ -39,30 +40,48 @@ const HomeScreen = () => {
   };
 
   const onDeleteCard = (array: number[]) => {
-    Alert.alert(Strings.app_str_confirmation, Strings.app_str_delete_alert_msg, [
-      {
-        text: Strings.app_str_cancel,
-        onPress: () => {},
-        style: "cancel",
-      },
+    Alert.alert(
+      Strings.app_str_confirmation,
+      Strings.app_str_delete_alert_msg,
+      [
+        {
+          text: Strings.app_str_cancel,
+          onPress: () => {},
+          style: "cancel",
+        },
+        {
+          text: Strings.app_str_ok,
+          onPress: () => {
+            //filter the selected card items to delete
+            const filteredArray = lotteryData.filter(
+              (subArray) => JSON.stringify(subArray) !== JSON.stringify(array)
+            );
+            //update the latest data into redux store
+            dispatch(deleteSelectedRow(filteredArray));
+          },
+        },
+      ]
+    );
+  };
+
+  const showPurchaseDialogue = () => {
+    //create custom string dialogue from selected numbers
+    let selectedNumbers = "";
+    for (let value of lotteryData) {
+      const formattedNumbers = JSON.stringify(value)
+        .replaceAll("[", "")
+        .replaceAll("]", "");
+      selectedNumbers =
+        selectedNumbers == ""
+          ? formattedNumbers
+          : selectedNumbers + "\n" + formattedNumbers;
+    }
+    Alert.alert(Strings.app_str_purchase_msg, selectedNumbers, [
       {
         text: Strings.app_str_ok,
-        onPress: () => {
-          //filter the selected card items to delete
-          const filteredArray = lotteryData.filter(
-            (subArray) => JSON.stringify(subArray) !== JSON.stringify(array)
-          );
-          //update the latest data into redux store
-          dispatch(deleteSelectedRow(filteredArray));
-        },
+        onPress: () => {},
       },
     ]);
-    //filter the selected card items to delete
-    const filteredArray = lotteryData.filter(
-      (subArray) => JSON.stringify(subArray) !== JSON.stringify(array)
-    );
-    //update the latest data into redux store
-    dispatch(deleteSelectedRow(filteredArray));
   };
 
   return (
@@ -95,7 +114,14 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </>
       )}
-      <TouchableOpacity style={styles.btn_purchase}>
+      <TouchableOpacity
+        disabled={isPurchaseBtnDisabled}
+        style={[
+          styles.btn_purchase,
+          isPurchaseBtnDisabled && styles.btn_purchase_disabled,
+        ]}
+        onPress={() => showPurchaseDialogue()}
+      >
         <Text style={styles.btn_txt_purchase}>{Strings.app_str_purchase}</Text>
       </TouchableOpacity>
     </View>
@@ -128,6 +154,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     bottom: "6%",
+  },
+  btn_purchase_disabled: {
+    backgroundColor: colors.app_gray_clr,
   },
   btn_txt_purchase: {
     color: colors.app_white_clr,

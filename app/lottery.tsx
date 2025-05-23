@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -41,18 +41,24 @@ const Lottery = () => {
     }
   };
 
+  //get & set the random numbers in new property
+  const listOfNumbers = RandomLotteryNumbers(
+    Strings.app_str_random_lottery_num_count,
+    false
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.view_lottery}>
         {items?.map((num: any, i: number) => {
           const isLastItem = items?.length - 1 == i;
-
           return (
             <CircleText
               value={num != -1 ? num : ""}
               key={i}
               showBorderBgClr={true}
               isLastItem={isLastItem}
+              onPressDisabled={true}
             />
           );
         })}
@@ -61,29 +67,32 @@ const Lottery = () => {
         <Text style={styles.txt_lottery_num}>
           {Strings.app_str_title_pick_num}
         </Text>
-        <ScrollView showsVerticalScrollIndicator>
-          <View style={styles.view_pick_numbers}>
-            {RandomLotteryNumbers(
-              Strings.app_str_random_lottery_num_count,
-              false
-            )?.map((item, i) => {
-              //check wheather the selected number is matching from the array or not
-              const isMatch = items.indexOf(i + 1) != -1;
-              return (
-                <CircleText
-                  value={i + 1}
-                  key={i}
-                  showBorderBgClr={true}
-                  showBgClr={isMatch}
-                  onTxtPicked={(num) => onNumberPicked(num)}
-                />
-              );
-            })}
-          </View>
-        </ScrollView>
+        <FlatList
+          data={listOfNumbers}
+          keyExtractor={(item, i) => i.toString()}
+          numColumns={6} // Set number of columns
+          renderItem={({ item, index }: any) => {
+            //check wheather the selected number is matching from the array or not
+            const isMatch = items.indexOf(index + 1) != -1;
+            return (
+              <CircleText
+                value={index + 1}
+                key={index}
+                showBorderBgClr={true}
+                showBgClr={isMatch}
+                onTxtPicked={(num) => onNumberPicked(num)}
+              />
+            );
+          }}
+          contentContainerStyle={styles.view_pick_numbers}
+        />
       </View>
       <TouchableOpacity
-        style={styles.btn_purchase}
+        disabled={isNotEmptyArray}
+        style={[
+          styles.btn_purchase,
+          isNotEmptyArray && styles.btn_purchase_disabled,
+        ]}
         onPress={() => {
           if (!items.includes(-1)) {
             //save selected lottery numbers into store
@@ -141,6 +150,9 @@ const styles = StyleSheet.create({
     bottom: "6%",
     alignSelf: "center",
   },
+  btn_purchase_disabled: {
+    backgroundColor: colors.app_gray_clr,
+  },
   btn_txt_purchase: {
     color: colors.app_white_clr,
     fontSize: 17,
@@ -151,8 +163,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   view_pick_numbers: {
-    flexDirection: "row",
-    flexWrap: "wrap",
     marginTop: 20,
     justifyContent: "center",
   },

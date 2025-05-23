@@ -23,10 +23,11 @@ const Strings = {
   app_str_number_selection_alert_msg:
     "Please select 5 numbers of your choice to proceed the lottery",
   app_str_delete_row: "delete row",
-  app_str_delete_alert_msg: "Are you sure you want to proceed to delete?",
+  app_str_delete_alert_msg: "Are you sure you want to delete this row?",
   app_str_confirmation: "Confirmation",
   app_str_ok: "Ok",
   app_str_cancel: "Cancel",
+  app_str_purchase_msg: "Your selections are :",
 };
 
 export { RandomLotteryNumbers, Strings };
