@@ -70,7 +70,7 @@ const Lottery = () => {
         <FlatList
           data={listOfNumbers}
           keyExtractor={(item, i) => i.toString()}
-          numColumns={6} // Set number of columns
+          numColumns={5} // Set number of columns
           renderItem={({ item, index }: any) => {
             //check wheather the selected number is matching from the array or not
             const isMatch = items.indexOf(index + 1) != -1;
@@ -165,6 +165,8 @@ const styles = StyleSheet.create({
   view_pick_numbers: {
     marginTop: 20,
     justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 300,
   },
 });
 

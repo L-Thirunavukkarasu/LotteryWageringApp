@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    bottom: "6%",
+    bottom: "7%",
   },
   btn_purchase_disabled: {
     backgroundColor: colors.app_gray_clr,
